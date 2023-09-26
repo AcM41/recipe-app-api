@@ -13,7 +13,7 @@ ARG DEV=false
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
     apk add --update --no-cache postgresql-client && \
-    apk add --update --no-cache --virtual .tmp-build-dev \
+    apk add --update --no-cache --virtual .tmp-build-deps \
         build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
@@ -27,4 +27,5 @@ RUN python -m venv /py && \
         django-user
 
 ENV PATH="/py/bin:$PATH"
+ 
 USER django-user
