@@ -19,8 +19,9 @@ def create_user(**params):
     return get_user_model().objects.create_user(**params)
 
 
-class PublicUserApiTest(TestCase):
+class PublicUserApiTests(TestCase):
     """Test the public feature of the user API"""
+
     def setUp(self):
         self.client = APIClient()
 
@@ -62,10 +63,9 @@ class PublicUserApiTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         user_exists = get_user_model().objects.filter(
-            email = payload['email']
-            ).exists()
+            email=payload['email']
+        ).exists()
         self.assertFalse(user_exists)
-
 
     def test_create_token_for_user(self):
         """Test generates token for valid credentials."""
@@ -91,7 +91,7 @@ class PublicUserApiTest(TestCase):
         """Test returns error if credentials invalid."""
         create_user(email='test@example.com', password='goodpass')
 
-        payload = {'email':'test@example.com', 'password': 'badpass'}
+        payload = {'email': 'test@example.com', 'password': 'badpass'}
         res = self.client.post(TOKEN_URL, payload)
 
         self.assertNotIn('token', res.data)
@@ -99,7 +99,7 @@ class PublicUserApiTest(TestCase):
 
     def test_create_token_blank_password(self):
         """Test posting a blank password returns an error."""
-        payload = {'email':'test@example.com', 'password':''}
+        payload = {'email': 'test@example.com', 'password': ''}
         res = self.client.post(TOKEN_URL, payload)
 
         self.assertNotIn('token', res.data)
@@ -111,17 +111,18 @@ class PublicUserApiTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
+
 class PrivateUserApiTests(TestCase):
     """Test api request that require authentication."""
 
     def setUp(self):
         self.user = create_user(
-            email= 'test@example.com',
+            email='test@example.com',
             password='testpass123',
             name='Test Name',
         )
         self.client = APIClient()
-        self.client.force_authenticate(user = self.user)
+        self.client.force_authenticate(user=self.user)
 
     def test_retrive_profile_success(self):
         """Test retrieving profile for logged in user"""
@@ -136,7 +137,7 @@ class PrivateUserApiTests(TestCase):
 
     def test_post_me_not_allowed(self):
         """Test POST is not allowed for the me endpoint."""
-        res = self.client.post(ME_URL,{})
+        res = self.client.post(ME_URL, {})
 
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
